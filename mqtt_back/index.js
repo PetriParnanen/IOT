@@ -62,7 +62,8 @@ client.on('message', function (topic, message) {
 
 		if (newIot.device!==undefined && 
 			newIot.unit!==undefined && 
-			newIot.value!==undefined){
+			newIot.value!==undefined &&
+			newIot.measurement!==undefined){
 
 			//console.log(newIot);
 			newIot.topic = topic;
@@ -93,9 +94,11 @@ client.on('message', function (topic, message) {
 
 //asking requests only from here. Measurements don't send data unless asked
 (async function sendRequest() {
+	let i = 0;
     while (true) {
-        await new Promise(resolve => setTimeout(resolve, 20000));
-        let topic = "ALL";
+        await new Promise(resolve => setTimeout(resolve, 60000));
+        let topic = "devices:ALL requestid:"+i;
+        i++;
 
         client.publish(process.env.MQTT_REQUEST_TOPIC, topic);
     }

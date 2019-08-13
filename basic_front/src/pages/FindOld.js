@@ -13,9 +13,12 @@ setDefaultLocale('fi');
 // Error checking
 export const ValidateForm = ( data ) => {
 	const errors = {};
-	if(!data.device) errors.device = "Laite on pakollinen tieto";
+	if(!data.device) errors.device = 
+		"Laite on pakollinen tieto";
 	if(data.startDate.getTime() > data.endDate.getTime()) errors.date 
 		= "Alkupäivän on oltava ennen loppumispäivämäärää";
+	if(!data.measurement) errors.measurement = 
+		"Mittauksen kohde on pakollinen tieto";
 	return errors;
 }
 
@@ -23,9 +26,11 @@ class FindOld extends Component {
 	state = {
 		devices: [],
 		values: [],
+		measurements: [],
 		data: {
 			device: "",
-			startDate: new Date(),
+			measurement: "",
+			startDate: new Date(new Date().getTime() - 1000*60*60*24),
 			endDate: new Date()
 		},
 		errors: {}
@@ -49,12 +54,28 @@ class FindOld extends Component {
 		};
 	};
 
-	handleChange = e => {
+	handleDeviceChange = e => {
+		const { data } = this.state;
+		let device = e.target.value;
+		this.setState({ 
+			data: {...data, device }
+		});
+		if(device){
+			api.iotdata.getMeasurements(device)
+				.then(measurements => {
+					this.setState( measurements )
+				})
+		} else {
+			this.setState({ measurements: [] })
+		};
+	};
+
+	handleMeasChange = e => {
 		const { data } = this.state;
 		this.setState({ 
-			data: {...data, device: e.target.value }
+			data: {...data, measurement: e.target.value }
 		});
-	};
+	}
 
 	handleStartDateChange = date => {
 		const { data } = this.state;
@@ -71,14 +92,14 @@ class FindOld extends Component {
 	};
 
 	render() {
-		const { devices, data, errors, values } = this.state;
+		const { devices, measurements, data, errors, values } = this.state;
 
 		return (
 			<div><h3>Vanhojen haku</h3><br /><br />
 				<form onSubmit={this.onSubmit}>
 
 				Valitse laite: <br />
-					<select value={data.device} onChange={this.handleChange}>
+					<select value={data.device} onChange={this.handleDeviceChange}>
 						<option key="1" value="" />
 						{devices && devices.map(val => (
 							<option key={val} value={val}>{val}</option>
@@ -86,6 +107,17 @@ class FindOld extends Component {
 					</select>
 					<br />
 					{ errors.device && <InlineError text={ errors.device } /> }
+					<br />
+
+				Valitse mittaus: <br />
+					<select value={data.measurement} onChange={this.handleMeasChange}>
+						<option key="1" value="" />
+						{measurements && measurements.map(meas => (
+							<option key={meas} value={meas}>{meas}</option>
+						))}
+					</select>
+					<br />
+					{ errors.measurement && <InlineError text={ errors.measurement } />}
 					<br />
 
 				Valitse päivämäärät: <br />

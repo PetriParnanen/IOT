@@ -1,0 +1,18 @@
+{
+  "name": "mqtt-all",
+  "version": "1.0.0",
+  "description": "Simple mqtt starter",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start_broker": "cd mqtt_broker && npm start",
+    "start_back": "cd mqtt_back && npm start",
+    "start_front": "cd basic_front && npm start",
+    "start": "npm-run-all --parallel start_broker start_back start_front"
+  },
+  "author": "Petri Pärnänen",
+  "license": "ISC",
+  "dependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}

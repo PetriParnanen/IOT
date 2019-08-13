@@ -45,6 +45,7 @@ class Messages extends Component {
             device={message.device}
             value={message.value}
             unit={message.unit}
+            measurement={message.measurement}
           />,
         )}
       </div>
