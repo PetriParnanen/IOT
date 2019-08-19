@@ -12,7 +12,7 @@ const webSocket = require('ws');
 
 dotenv.config();
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.OPENSHIFT_NODEJS_PORT || 5000;
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -48,8 +48,17 @@ app.get('*', (req,res) => {
 // -----------------------------------------------
 //MQTT connection to get data
 const client = mqtt.connect(process.env.MQTT_HOST);
+let i = 0;
+
+function pub_index(){
+	let topic = "devices:ALL requestid:"+i;
+	client.publish(process.env.MQTT_REQUEST_TOPIC, topic);
+ 	i +=1;
+};
+
 client.on('connect',  () => {
 	client.subscribe(process.env.MQTT_RESULT_TOPIC);
+	setInterval(function(){pub_index()},60000)
 	return console.log('Connected');
 });
 
@@ -93,7 +102,7 @@ client.on('message', function (topic, message) {
 });
 
 //asking requests only from here. Measurements don't send data unless asked
-(async function sendRequest() {
+/* (async function sendRequest() {
 	let i = 0;
     while (true) {
         await new Promise(resolve => setTimeout(resolve, 60000));
@@ -102,6 +111,6 @@ client.on('message', function (topic, message) {
 
         client.publish(process.env.MQTT_REQUEST_TOPIC, topic);
     }
-})();
+})(); */
 
 app.listen(port, () => console.log(`Running on port ${port}`));
