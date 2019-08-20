@@ -8,7 +8,7 @@ const iotData = require('./src/models/Iotdata');
 const message = require('./src/routes/iotdata');
 
 //Just for sending data to front
-const webSocket = require('ws');
+//const webSocket = require('ws');
 
 dotenv.config();
 const app = express();
@@ -30,11 +30,11 @@ db.on('error', console.error.bind(console, 'db connection error:'));
 
 // -----------------------------------------------
 // WEBSOCKET TO SEND DATA TO CLIENTS
-const wss = new webSocket.Server({ port: 3030 });
+/*const wss = new webSocket.Server({ port: 3030 });
 
 wss.on('connection', () => {
 	console.log("websocket connection");
-});
+});*/
 
 // ----------------------------------------------
 // ROUTING REQUESTS
@@ -51,15 +51,17 @@ const client = mqtt.connect(process.env.MQTT_HOST);
 let i = 0;
 
 function pub_index(){
+	console.log('pub index');
 	let topic = "devices:ALL requestid:"+i;
 	client.publish(process.env.MQTT_REQUEST_TOPIC, topic);
- 	i +=1;
+ 	i++;
+ 	console.log(i);
 };
 
 client.on('connect',  () => {
+	console.log('Connected');
 	client.subscribe(process.env.MQTT_RESULT_TOPIC);
-	setInterval(function(){pub_index()},60000)
-	return console.log('Connected');
+	setInterval(function(){pub_index()},60000);
 });
 
 // Waiting for messages to arrive and store to mongo
@@ -79,11 +81,11 @@ client.on('message', function (topic, message) {
 			const iotRow = new iotData(newIot);
 
 			// Sending data to websocket clients
-			wss.clients.forEach( wsclient => {
+			/*wss.clients.forEach( wsclient => {
 				if (wsclient.readyState == webSocket.OPEN){
 					wsclient.send(JSON.stringify(newIot));
 				}
-			});
+			});*/
 
 			// saving data to database
 			iotRow.save((err, newRecord) => {

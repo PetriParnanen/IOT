@@ -1,10 +1,14 @@
+//because it's in openshift this needs to be over websocket
+
 const mosca = require('mosca');
 
-const settings = {
-	port:1883
-}
-
-const server = new mosca.Server(settings);
+const server = new mosca.Server({
+	http: {
+    	port: 8080,
+    	bundle: true,
+    	static: './'
+  	}
+});
 
 server.on('clientConnected', function(client) {
     console.log('client connected', client.id);
