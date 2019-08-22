@@ -8,7 +8,7 @@ const iotData = require('./src/models/Iotdata');
 const message = require('./src/routes/iotdata');
 
 //Just for sending data to front
-// const webSocket = require('ws');
+const webSocket = require('ws');
 
 dotenv.config();
 const app = express();
@@ -30,11 +30,11 @@ db.on('error', console.error.bind(console, 'db connection error:'));
 
 // -----------------------------------------------
 // WEBSOCKET TO SEND DATA TO CLIENTS
-/*const wss = new webSocket.Server({ port: 3030 });
+const wss = new webSocket.Server({ port: 8080 });
 
 wss.on('connection', () => {
 	console.log("websocket connection");
-});*/
+});
 
 // ----------------------------------------------
 // ROUTING REQUESTS
@@ -79,11 +79,11 @@ client.on('message', function (topic, message) {
 			const iotRow = new iotData(newIot);
 
 			// Sending data to websocket clients
-			/*wss.clients.forEach( wsclient => {
+			wss.clients.forEach( wsclient => {
 				if (wsclient.readyState == webSocket.OPEN){
 					wsclient.send(JSON.stringify(newIot));
 				}
-			});*/
+			});
 
 			// saving data to database
 			iotRow.save((err, newRecord) => {
