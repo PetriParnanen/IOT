@@ -8,7 +8,6 @@ const iotData = require('./src/models/Iotdata');
 const message = require('./src/routes/iotdata');
 
 //Just for sending data to front
-//const webSocket = require('ws');
 
 dotenv.config();
 const app = express();
@@ -26,15 +25,6 @@ const mongoOptions = {
 mongoose.connect(process.env.MONGODB_URL, mongoOptions);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'db connection error:'));
-
-
-// -----------------------------------------------
-// WEBSOCKET TO SEND DATA TO CLIENTS
-/*const wss = new webSocket.Server({ port: 3030 });
-
-wss.on('connection', () => {
-	console.log("websocket connection");
-});*/
 
 // ----------------------------------------------
 // ROUTING REQUESTS
@@ -63,8 +53,8 @@ function pub_index(){
 client.on('connect',  () => {
 	console.log('Connected');
 	client.subscribe(process.env.MQTT_RESULT_TOPIC);
-	//setInterval(function(){pub_index()},60000);
-	(async function sendRequest() {
+	setInterval(function(){pub_index()},60000);
+	/*(async function sendRequest() {
 		let i = 0;
     	while (true) {
         	await new Promise(resolve => setTimeout(resolve, 60000));
@@ -76,7 +66,7 @@ client.on('connect',  () => {
 			console.log("Reqid: "+i + " " + rtime)
         	client.publish(process.env.MQTT_REQUEST_TOPIC, topic);
     	}
-	})();
+	})();*/
 });
 
 // Waiting for messages to arrive and store to mongo
@@ -95,13 +85,6 @@ client.on('message', function (topic, message) {
 			newIot.topic = topic;
 			const iotRow = new iotData(newIot);
 
-			// Sending data to websocket clients
-			/*wss.clients.forEach( wsclient => {
-				if (wsclient.readyState == webSocket.OPEN){
-					wsclient.send(JSON.stringify(newIot));
-				}
-			});*/
-
 			// saving data to database
 			iotRow.save((err, newRecord) => {
 				if(err) {
@@ -118,16 +101,5 @@ client.on('message', function (topic, message) {
   // message is Buffer
 });
 
-//asking requests only from here. Measurements don't send data unless asked
-/* (async function sendRequest() {
-	let i = 0;
-    while (true) {
-        await new Promise(resolve => setTimeout(resolve, 60000));
-        let topic = "devices:ALL requestid:"+i;
-        i++;
-
-        client.publish(process.env.MQTT_REQUEST_TOPIC, topic);
-    }
-})(); */
 
 app.listen(port, () => console.log(`Running on port ${port}`));
