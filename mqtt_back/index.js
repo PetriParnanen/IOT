@@ -41,6 +41,8 @@ const client = mqtt.connect(process.env.MQTT_HOST);
 let i = 0;
 
 function pub_index(){
+	//openshift seems to hate this code and creates several replicas of this script.
+	//So will do several publishes per minute
 	let today = new Date();
 	const rtime = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+
 		" "+today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -53,7 +55,7 @@ function pub_index(){
 client.on('connect',  () => {
 	console.log('Connected');
 	client.subscribe(process.env.MQTT_RESULT_TOPIC);
-	setInterval(function(){pub_index()},60000);
+	//setInterval(function(){pub_index()},60000);
 	/*(async function sendRequest() {
 		let i = 0;
     	while (true) {
