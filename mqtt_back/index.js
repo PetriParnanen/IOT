@@ -40,9 +40,9 @@ app.get('*', (req,res) => {
 const client = mqtt.connect(process.env.MQTT_HOST);
 let i = 0;
 
-function pub_index(){
-	//openshift seems to hate this code and creates several replicas of this script.
-	//So will do several publishes per minute
+// Openshift seems to create several instances of this code, so was getting
+// several requests from here instead of that needed one. So now it is just receiver
+/*function pub_index(){
 	let today = new Date();
 	const rtime = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+
 		" "+today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -52,23 +52,26 @@ function pub_index(){
  	i++;
 };
 
+//had several solutions for timeout
+(async function sendRequest() {
+	let i = 0;
+    while (true) {
+       	await new Promise(resolve => setTimeout(resolve, 60000));
+       	let today = new Date();
+       	let topic = "devices:ALL requestid:"+i;
+       	i++;
+       	const rtime = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+
+			" "+today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+		console.log("Reqid: "+i + " " + rtime)
+       	client.publish(process.env.MQTT_REQUEST_TOPIC, topic);
+   	}
+})();
+*/
+
 client.on('connect',  () => {
 	console.log('Connected');
 	client.subscribe(process.env.MQTT_RESULT_TOPIC);
 	//setInterval(function(){pub_index()},60000);
-	/*(async function sendRequest() {
-		let i = 0;
-    	while (true) {
-        	await new Promise(resolve => setTimeout(resolve, 60000));
-        	let today = new Date();
-        	let topic = "devices:ALL requestid:"+i;
-        	i++;
-        	const rtime = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+
-				" "+today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-			console.log("Reqid: "+i + " " + rtime)
-        	client.publish(process.env.MQTT_REQUEST_TOPIC, topic);
-    	}
-	})();*/
 });
 
 // Waiting for messages to arrive and store to mongo

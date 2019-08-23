@@ -6,17 +6,17 @@ import MqttMessage from '../scripts/MqttMessage';
 const topic = process.env.REACT_APP_TOPIC;
 
 class Messages extends Component {
+  /*
+  //At beginning it was meant to be websocket, but due to openshift I changed it
   state = {
     messages: [],
   }
 
-  /*
   ws = new WebSocket(URL);
-  */
 
   //client = new Mqtt.connect(process.env.REACT_APP_WSHOST);
 
-  /*componentDidMount() {
+  componentDidMount() {
 
     this.client.on('connect') = () => {
       console.log('connected');
@@ -48,8 +48,6 @@ class Messages extends Component {
   */
 
   render() {
-
-    console.log(this.props.data);
 
     return (
       <div>
