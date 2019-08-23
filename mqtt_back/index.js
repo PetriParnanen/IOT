@@ -52,9 +52,9 @@ let i = 0;
 
 function pub_index(){
 	let today = new Date();
-	const time = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+
+	const rtime = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+
 		" "+today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-	console.log("Reqid: "+i + " ")
+	console.log("Reqid: "+i + " " + rtime)
 	let topic = "devices:ALL requestid:"+i;
 	client.publish(process.env.MQTT_REQUEST_TOPIC, topic);
  	i++;
