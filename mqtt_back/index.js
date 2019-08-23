@@ -51,6 +51,10 @@ const client = mqtt.connect(process.env.MQTT_HOST);
 let i = 0;
 
 function pub_index(){
+	let today = new Date();
+	const time = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+
+		" "+today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+	console.log("Reqid: "+i + " ")
 	let topic = "devices:ALL requestid:"+i;
 	client.publish(process.env.MQTT_REQUEST_TOPIC, topic);
  	i++;
